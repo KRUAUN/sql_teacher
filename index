@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ส่งข้อมูลไป Google Sheets</title>
+</head>
+<body>
+  <h2>แบบฟอร์มติดต่อ</h2>
+  <form id="contactForm">
+    <p>
+      <label>ชื่อ:</label><br>
+      <input type="text" name="name" required>
+    </p>
+    <p>
+      <label>อีเมล:</label><br>
+      <input type="email" name="email" required>
+    </p>
+    <p>
+      <label>ข้อความ:</label><br>
+      <textarea name="message" required></textarea>
+    </p>
+    <button type="submit" id="submitBtn">ส่งข้อมูล</button>
+  </form>
+
+  <p id="statusMsg"></p>
+
+  <script>
+    const SCRIPT_URL = "วาง_WEB_APP_URL_ที่ได้จากขั้นตอนที่_2_ตรงนี้";
+    const form = document.getElementById("contactForm");
+    const statusMsg = document.getElementById("statusMsg");
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      statusMsg.innerText = "กำลังบันทึกข้อมูล...";
+
+      const formData = {
+        name: form.name.value,
+        email: form.email.value,
+        message: form.message.value
+      };
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        if (result.status === "success") {
+          statusMsg.innerText = "บันทึกข้อมูลสำเร็จเรียบร้อย!";
+          form.reset();
+        } else {
+          statusMsg.innerText = "เกิดข้อผิดพลาดในการบันทึก";
+        }
+      } catch (err) {
+        statusMsg.innerText = "เชื่อมต่อล้มเหลว: " + err.message;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
